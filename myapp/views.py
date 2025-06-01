@@ -5,23 +5,20 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout as auth_logout
+from django.contrib.auth.forms import UserCreationForm
 from .models import Room, Topic
 from .forms import RoomForm
 # Create your views here.
 
 
 def loginPage(request):
+    page = 'login'
+
     if request.user.is_authenticated:
         return redirect('home')
-
-    if request.method == 'POST': 
-        username = request.POST.get('username')
+    if request.method == 'POST':
+        username = request.POST.get('username').lower()
         password = request.POST.get('password')
-
-        try:
-            user = User.objects.get(username=username)
-        except: 
-            messages.error(request, "User does not exist") 
 
         user = authenticate(request, username=username, password=password)
 
@@ -29,15 +26,32 @@ def loginPage(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.error(request, "Username OR password does not exist")
-    
-    # This needs to be at the same indentation level as the if statement above
-    context = {}
+            messages.error(request, 'Username or password is incorrect')
+
+    context = {'page': page}
     return render(request, 'myapp/login_register.html', context)
 
 def user_logout(request):
     auth_logout(request)
     return redirect('home')
+
+def registerUser(request):
+    form = UserCreationForm()
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user= form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'An error occured during registration!')
+
+    return render(request, 'myapp/login_register.html', {'form': form} )
+    
+    
 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
@@ -88,6 +102,7 @@ def updateRoom(request, pk):
     context = {'form': form}
     return render(request, 'myapp/room_form.html', context) 
 
+@login_required(login_url='login')
 def deleteRoom(request, pk):
     room = Room.objects.get(id=pk)
 
