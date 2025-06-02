@@ -50,16 +50,6 @@ def registerUser(request):
             messages.error(request, 'An error occured during registration!')
 
     return render(request, 'myapp/login_register.html', {'form': form} )
-    
-    
-
-from django.shortcuts import render
-from django.db.models import Q
-from .models import Room, Topic, Message
-
-from django.shortcuts import render
-from django.db.models import Q
-from .models import Room, Topic, Message
 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') is not None else ''
@@ -106,6 +96,14 @@ def room(request, pk):
 
     context = {'room': room, 'room_messages': room_messages, 'participants': participants}
     return render(request, 'myapp/room.html', context)
+
+def userProfile(request, pk):
+    user =User.objects.get(id=pk)
+    rooms = user.room_set.all()
+    room_messages = user.message_set.all()
+    topics = Topic.objects.all()
+    context= {'user':user, 'rooms': rooms, 'room_messages': room_messages, 'topics': topics}
+    return render(request, 'myapp/profile.html', context)
 
 @login_required(login_url='login')
 def createRoom(request):
