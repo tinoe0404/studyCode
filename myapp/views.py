@@ -53,21 +53,45 @@ def registerUser(request):
     
     
 
+from django.shortcuts import render
+from django.db.models import Q
+from .models import Room, Topic, Message
+
+from django.shortcuts import render
+from django.db.models import Q
+from .models import Room, Topic, Message
+
 def home(request):
-    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
+
     rooms = Room.objects.filter(
         Q(topic__name__icontains=q) |
         Q(name__icontains=q) |
         Q(description__icontains=q)
     )
-    topics = Topic.objects.all() 
+
+    topics = Topic.objects.all()
     room_count = rooms.count()
-    context = {'rooms': rooms, 'topics': topics, 'room_count': room_count}
+
+    room_messages = Message.objects.filter(
+        Q(room__topic__name__icontains=q) |
+        Q(room__name__icontains=q)
+    )
+
+    context = {
+        'rooms': rooms,
+        'topics': topics,
+        'room_count': room_count,
+        'room_messages': room_messages
+    }
+
     return render(request, 'myapp/home.html', context)
+
+
 
 def room(request, pk):
     room = Room.objects.get(id=pk)
-    room_messages = room.message_set.all().order_by('-created')
+    room_messages = room.message_set.all()
     participants = room.participants.all()
 
 
