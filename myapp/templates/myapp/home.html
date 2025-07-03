@@ -1,13 +1,10 @@
-{% extends 'main.html'%} 
+{% extends 'main.html' %} 
 
 {% block content %}
-
- 
   <main class="layout layout--3">
     <div class="container">
       <!-- Topics Start -->
       {% include 'myapp/topics_components.html' %}
-      
       <!-- Topics End -->
 
       <!-- Room List Start -->
@@ -29,12 +26,13 @@
             <a class="btn btn--main btn--pill" href="#">Recent Activities</a>
           </div>
         </div>
+
         <div class="roomList__header">
           <div>
             <h2>Study Room</h2>
-            <p>{{rooms.count}} Rooms available</p>
+            <p>{{ rooms.count }} Rooms available</p>
           </div>
-          <a class="btn btn--main" href="create-room.html">
+          <a class="btn btn--main" href="{% url 'create-room' %}">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
               <title>add</title>
               <path
@@ -45,13 +43,12 @@
           </a>
         </div>
 
-        {% include 'myapp/feed_component.html'%}
-  
+        {% include 'myapp/feed_component.html' %}
       </div>
       <!-- Room List End -->
 
       <!-- Activities Start -->
-      {% include 'myapp/activity_component.html'%}
+      {% include 'myapp/activity_component.html' %}
       <!-- Activities End -->
     </div>
   </main>
