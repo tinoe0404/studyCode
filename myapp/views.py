@@ -4,9 +4,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout as auth_logout
-from django.contrib.auth.forms import UserCreationForm
 from .models import Room, Topic, Message, User
-from .forms import RoomForm, UserForm
+from .forms import RoomForm, UserForm, MyUserCretionForm
 
 
 def loginPage(request):
@@ -37,10 +36,10 @@ def user_logout(request):
 
 
 def registerUser(request):
-    form = UserCreationForm()
+    form = MyUserCretionForm()
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = MyUserCretionForm(request.POST)
         if form.is_valid():   
             user = form.save(commit=False)
             user.username = user.username.lower()
